@@ -18,6 +18,10 @@
                                 <a href="{{ route('login') }}">aqui</a>.
                             </p>
                         @endauth
+
+                        @php
+                            dd(Auth::user());
+                        @endphp
                         </p>
                     </div>
                 </div>

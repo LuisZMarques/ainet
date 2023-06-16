@@ -26,7 +26,7 @@ class User extends Authenticatable
         'password',
         'photo_url',    
         'user_type',
-        'blocked'
+        'blocked',
     ];
 
     /**

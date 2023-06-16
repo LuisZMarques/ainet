@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use App\Models\OrderItem;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 
@@ -28,17 +29,18 @@ class CartController extends Controller
     {
         // Replaced with the gate 'access-cart' (middleware applied on the contructor)
         try {
-            if ($request->user()->isCustomer() !== true) {
+            $cart = session('cart', []);
+            if (array_key_exists($tshirt->id, $cart)) {
+                #trocar por verificação de mesmo orderItem
                 $alertType = 'warning';
-                $htmlMessage = "Não é Cliente, logo não pode adicionar tshirts ao carrinho";
+                $htmlMessage = "tshirt com imagem ' <strong>\"{$tshirt->tshirt_images()->nome}\"</strong> ' já está no carrinho!";
             } else {
                 $cart[$tshirt->id] = $tshirt;
                 // We can access session with a request function
                 $request->session()->put('cart', $cart);
                 $alertType = 'success';
-                $url = route('orderItem.show', ['tshirt' => $tshirt]);
-                $htmlMessage = "tshirt <a href='$url'>#{$tshirt->id}</a>
-                <strong>\"{$tshirt->tshirt_images()->nome}\"</strong> foi adicionada ao carrinho!";
+                $url = route('orderItem.show');
+                $htmlMessage = "Tshirt com imagem ' <strong>\"{$tshirt->tshirt_images()->nome}\"</strong> ' foi adicionada ao carrinho!";
             }
         } catch (\Exception $error) {
             $url = route('OrderItem.show', ['tshirt' => $tshirt]);
@@ -51,16 +53,16 @@ class CartController extends Controller
             ->with('alert-type', $alertType);
     }
 
-    public function removeFromCart(Request $request, Disciplina $disciplina): RedirectResponse
+    public function removeFromCart(Request $request, OrderItem $tshirt): RedirectResponse
     {
         $cart = session('cart', []);
-        if (array_key_exists($disciplina->id, $cart)) {
-            unset($cart[$disciplina->id]);
+        if (array_key_exists($tshirt->id, $cart)) {
+            unset($cart[$tshirt->id]);
         }
         $request->session()->put('cart', $cart);
-        $url = route('disciplinas.show', ['disciplina' => $disciplina]);
-        $htmlMessage = "Disciplina <a href='$url'>#{$disciplina->id}</a>
-                        <strong>\"{$disciplina->nome}\"</strong> foi removida do carrinho!";
+        $url = route('cart.show');
+        $htmlMessage = "tshirt <a href='$url'>#{$tshirt->id}</a>
+                        <strong>\"{$tshirt->nome}\"</strong> foi removida do carrinho!";
         return back()
             ->with('alert-msg', $htmlMessage)
             ->with('alert-type', 'success');
@@ -69,10 +71,9 @@ class CartController extends Controller
     public function store(Request $request): RedirectResponse
     {
         try {
-            $userType = $request->user()->tipo ?? 'O';
-            if ($userType != 'A') {
+            if (Auth::user()->isCustomer() !==  true) {
                 $alertType = 'warning';
-                $htmlMessage = "O utilizador não é aluno, logo não pode confirmar as inscrições às disciplina do carrinho";
+                $htmlMessage = "Não é aluno, logo não pode aceder ao carrinho";
             } else {
                 $cart = session('cart', []);
                 $total = count($cart);
@@ -98,7 +99,7 @@ class CartController extends Controller
                 }
             }
         } catch (\Exception $error) {
-            $htmlMessage = "Não foi possível confirmar a inscrição das disciplinas do carrinho, porque ocorreu um erro!";
+            $htmlMessage = "Não foi possível inserir as tshirts no carrinho, porque ocorreu um erro!";
             $alertType = 'danger';
         }
         return back()

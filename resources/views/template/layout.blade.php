@@ -139,7 +139,7 @@
                             Minhas Imagens
                         </a>
                         <a class="nav-link"
-                            href="">
+                            href="{{ route('cart.show') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
                             Carrinho
                         </a>

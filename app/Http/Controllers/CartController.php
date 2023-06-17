@@ -11,6 +11,18 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+use function imagecreatefromjpeg;
+use function imagecreatefrompng;
+use function imagesx;
+use function imagesy;
+use function imagecopyresampled;
+use function imagejpeg;
+use function imagepng;
+use function imagedestroy;
+use function imagecolorallocatealpha;
+use function imagefill;
+use function imagecolortransparent;
+
 
 class CartController extends Controller
 {
@@ -47,10 +59,18 @@ class CartController extends Controller
                 $alertType = 'warning';
                 $htmlMessage = "Este pedido já tem tshirts com a imagem ' <strong>\"{$tshirtImageName}\"</strong> ', cor ' <strong>\"{$tshirtColor}\"</strong> ' e tamanho ' <strong>\"{$tshirtSize}\"</strong> ' adicionada ao carrinho!";
             } else {
+                                
+                if (empty($cart[0])) {
+                    $cart[0] = [];
+                }
+                
+                array_push($cart[0], $tshirtUniqueId);
+
+
                 $cart[$tshirtUniqueId] = [
                     'imageId' => $tshirtImageId,
                     'name' => $tshirtImageName,
-                    'imageUrl' => 'storage/tshirt_images/' . $tshirtImageUrl,
+                    'tshirtPreviewImage' => 'storage/preview/'. $tshirtUniqueId . '.png',
                     'size' => $tshirtSize,
                     'color' => $tshirtColor,
                     'quantity' => $tshirtQuantity,
@@ -58,11 +78,8 @@ class CartController extends Controller
                     'subTotal' => $tshirtSubTotal,
                 ];
                 
-                if (empty($cart[0])) {
-                    $cart[0] = [];
-                }
-                
-                array_push($cart[0], $tshirtUniqueId);
+                $tshirtPreviewImage = $this->generateTshirtPreviewImage($tshirtColor, $imageFullUrl, $tshirtUniqueId);
+
 
                 $request->session()->put('cart', $cart);
                 $alertType = 'success';
@@ -136,5 +153,51 @@ class CartController extends Controller
         return back()
             ->with('alert-msg', $htmlMessage)
             ->with('alert-type', 'success');
+    }
+
+    private function generateTshirtPreviewImage($tshirtColor, $imageFullUrl, $tshirtUniqueId)
+    {
+        // Load the background image (white t-shirt)
+        $colorImage = imagecreatefromjpeg('storage/tshirt_base/' . $tshirtColor . '.jpg');
+
+        // Load the overlay image (t-shirt design)
+        $imageOnTshirt = imagecreatefrompng($imageFullUrl);
+
+        // Get the dimensions of the images
+        $backgroundWidth = imagesx($colorImage);
+        $backgroundHeight = imagesy($colorImage);
+        $overlayWidth = imagesx($imageOnTshirt);
+        $overlayHeight = imagesy($imageOnTshirt);
+        
+        $newOverlayWidth = 175;
+        $newOverlayHeight = 200;
+        // Create a new image with the new dimensions
+        $resizedImageOnTshirt = imagescale($imageOnTshirt, $newOverlayWidth, $newOverlayHeight);
+
+        // Calculate the position to center the resized image on the background image
+        $x = ($backgroundWidth - $newOverlayWidth) / 2;
+        $y = ($backgroundHeight - $newOverlayHeight) / 2;
+
+        // Create a new image with transparent background for the overlay
+        $combinedImage = imagecreatetruecolor($backgroundWidth, $backgroundHeight);
+        $transparentColor = imagecolorallocatealpha($combinedImage, 0, 0, 0, 127);
+        imagefill($combinedImage, 0, 0, $transparentColor);
+        imagecolortransparent($combinedImage, $transparentColor);
+        
+        // Copy the background image onto the combined image
+        imagecopy($combinedImage, $colorImage, 0, 0, 0, 0, $backgroundWidth, $backgroundHeight);
+        
+        // Copy the overlay image onto the combined image with alpha transparency
+        imagecopy($combinedImage, $resizedImageOnTshirt, $x, $y, 0, 0, $newOverlayWidth, $newOverlayHeight);
+
+        $previewFolderPath = 'storage/preview/';
+        if (!file_exists($previewFolderPath)) {
+            mkdir($previewFolderPath, 0777, true);
+        }
+
+        $previewImagePath = 'storage/preview/'. $tshirtUniqueId . '.png';
+        imagepng($combinedImage, $previewImagePath);
+
+        return $previewImagePath;
     }
 }

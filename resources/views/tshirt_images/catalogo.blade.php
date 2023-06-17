@@ -25,6 +25,7 @@
                             <form method="POST" action="{{ route('cart.add') }}">
                                 @csrf
                                 <input type="hidden" name="idImage" value="{{ $tshirtImage->id }}">
+                                <input type="hidden" name="imageUrl" value="{{ $tshirtImage->image_url }}">
                                 <img src="{{ asset('storage/tshirt_images/' . $tshirtImage->image_url) }}" class="card-img-top m-2" alt="T-Shirt Image" style="width: 150px; height: 150px;">
                                 <div class="card-body">
                                     <input type="hidden" name="nameImage" value="{{ $tshirtImage->name }}">

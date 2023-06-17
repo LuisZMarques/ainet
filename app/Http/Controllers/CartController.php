@@ -33,6 +33,8 @@ class CartController extends Controller
             $cart = session('cart', []);
             $tshirtImageId = $request->input('idImage');
             $tshirtImageName = $request->input('nameImage');
+            $tshirtImageUrl = $request->input('imageUrl');
+            $imageFullUrl = 'storage/tshirt_images/' . $tshirtImageUrl;
             $tshirtSize = $request->input('size');
             $tshirtColor = $request->input('color');
             $tshirtQuantity = $request->input('quantity');
@@ -47,6 +49,8 @@ class CartController extends Controller
             } else {
                 $cart[$tshirtUniqueId] = [
                     'imageId' => $tshirtImageId,
+                    'name' => $tshirtImageName,
+                    'imageUrl' => 'storage/tshirt_images/' . $tshirtImageUrl,
                     'size' => $tshirtSize,
                     'color' => $tshirtColor,
                     'quantity' => $tshirtQuantity,

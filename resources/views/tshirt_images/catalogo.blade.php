@@ -22,16 +22,20 @@
                     @foreach($tshirtImages as $tshirtImage)
                         <div class="col-md-4 items-center">
                             <div class="card mb-4 text-center align-items-center">
+                            <form method="POST" action="{{ route('cart.add') }}">
+                                @csrf
+                                <input type="hidden" name="idImage" value="{{ $tshirtImage->id }}">
                                 <img src="{{ asset('storage/tshirt_images/' . $tshirtImage->image_url) }}" class="card-img-top m-2" alt="T-Shirt Image" style="width: 150px; height: 150px;">
                                 <div class="card-body">
+                                    <input type="hidden" name="nameImage" value="{{ $tshirtImage->name }}">
                                     <h5 class="card-title">{{ $tshirtImage->name }}</h5>
-                                    <select class="form-control m-2" required>
+                                    <select class="form-control m-2" name="color" required>
                                         <option value="">Seleciona a cor</option>
                                         @foreach($colors as $color)
                                             <option value="{{ $color->code }}">{{ $color->name }}</option>
                                         @endforeach
                                     </select>
-                                    <select class="form-control m-2" required>
+                                    <select class="form-control m-2"  name="size" required>
                                         <option value="">Seleciona o tamanho</option>
                                         <option value="XS">XS</option>
                                         <option value="S">S</option>
@@ -39,7 +43,7 @@
                                         <option value="L">L</option>
                                         <option value="XL">XL</option>
                                     </select>
-                                    <select class="form-control m-2" required>
+                                    <select class="form-control m-2" name="quantity" required>
                                         <option value="">Seleciona a quantidade</option>
                                         @for($i=1; $i <= 9; $i++)
                                         @php
@@ -53,8 +57,14 @@
                                         <option value="{{ $i }}">{{ $i }} ({{ $subtotal }} €)</option>
                                         @endfor
                                     </select>
-                                    <a href="#" class="btn btn-primary m-2">Adicionar ao Carrinho</a>
+                                    <input type="hidden" name="unitPrice" value="{{ $unitPrice }}">
+                                    <input type="hidden" name="subTotal" value="{{ $subtotal }}">
+                                    <button type="submit" name="addToCart" class="btn btn-primary">
+                                        <i class="fas fa-plus"></i>
+                                        Adicionar ao Carrinho
+                                    </button>
                                 </div>
+                            </form>
                             </div>
                         </div>
                     @endforeach

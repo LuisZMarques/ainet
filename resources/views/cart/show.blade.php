@@ -10,57 +10,47 @@
 @endsection
 
 @section('main')
-    @if ($cart)
+    @if (!empty($cart[0]))
         <div>
             <h3>Tshirts no carrinho</h3>
         </div>
-
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">Tshirt</th>
-                    <th scope="col">Cor</th>
-                    <th scope="col">Tamanho</th>
-                    <th scope="col">Quantidade</th>
-                    <th scope="col">Preço Unitário</th>
-                    <th scope="col">Subtotal</th>
-                    <th scope="col">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($cart->items as $item)
-                    <tr>
-                        <td>{{ $item->tshirt->name }}</td>
-                        <td>{{ $item->color->name }}</td>
-                        <td>{{ $item->size }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ $item->unit_price }} €</td>
-                        <td>{{ $item->subtotal }} €</td>
-                        <td>
-                            <form method="POST" action="{{ route('cart.destroy', $item->id) }}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Remover</button>
-                            </form>
-                        </td>
-                    </tr>
+        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                @php $active = true; @endphp
+                @foreach ($cart[0] as $tshirtUniqueId)
+                    @php $item = $cart[$tshirtUniqueId]; @endphp
+                    <div class="carousel-item {{ $active ? 'active' : '' }}">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ $tshirtUniqueId }}</h5>
+                                <p class="card-text">Cor: {{ $item['color'] }}</p>
+                                <p class="card-text">Tamanho: {{ $item['size'] }}</p>
+                                <p class="card-text">Quantidade: {{ $item['quantity'] }}</p>
+                                <p class="card-text">Preço Unitário: {{ $item['unitPrice'] }} €</p>
+                                <p class="card-text">Subtotal: {{ $item['subTotal'] }} €</p>
+                                <form method="POST" action="{{ route('cart.destroy', $item['imageId']) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">Remover</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    @php $active = false; @endphp
                 @endforeach
-                <tr>
-                    <td colspan="5"></td>
-                    <td><strong>Total</strong></td>
-                    @php
-                        $total = 0;
-                        foreach ($cart->items as $item) {
-                            $total += $item->subtotal;
-                        }
-                        session('total', $total);
-                    @endphp
-                    <td><strong>{{ $total }} €</strong></td>
-                </tr>
-            </tbody>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
 
         <div class="my-4 d-flex justify-content-end">
-            <button type="submit" class="btn btn-primary" name="ok" form="formStore">Confirmar Inscrições</button>
+            <button type="submit" class="btn btn-primary" name="ok" form="formStore">Confirmar Compra</button>
             <button type="submit" class="btn btn-danger ms-3" name="clear" form="formClear">Limpar Carrinho</button>
         </div>
         <form id="formStore" method="POST" action="{{ route('cart.store') }}" class="d-none">

@@ -55,7 +55,7 @@ class TshirtImageController extends Controller
 
     public function catalogo(Request $request) : View
     {
-        if(Auth::user()->isCustomer() || Auth::user()->isAdmin()){
+        if(Auth::user()->isCustomer()){
             $customer_id = Auth::user()->id;
             
             $category = $request->input('category');

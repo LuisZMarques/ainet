@@ -8,6 +8,8 @@ use App\Http\Controllers\PriceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\TshirtImageController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CartController;
 
 Route::view('/', 'home')->name('root');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -92,15 +94,13 @@ Route::delete('/orderItems/{orderItem}', [OrderItemController::class, 'destroy']
 
 //Cart 
 
-Route::post('cart/{orderItem}', [CartController::class, 'addToCart'])
- ->name('cart.add');
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
 // Remove a "orderItem"(Tshirt) from the cart:
-Route::delete('cart/{orderItem}', [CartController::class, 'removeFromCart'])
-->name('cart.remove');
+Route::delete('/cart/{tshirtImage}', [CartController::class, 'removeFromCart'])->name('cart.remove');
 // Show the cart:
-Route::get('cart', [CartController::class, 'show'])->name('cart.show');
+Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
 // Confirm (store) the cart and save orderItem/tshirts registration on the database:
-Route::post('cart', [CartController::class, 'store'])->name('cart.store');
+Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
 // Clear the cart:
-Route::delete('cart', [CartController::class, 'destroy'])->name('cart.destroy');
+Route::delete('/cart', [CartController::class, 'destroy'])->name('cart.destroy');
 

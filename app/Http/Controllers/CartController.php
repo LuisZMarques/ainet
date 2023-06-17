@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\TshirtImage;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -29,19 +29,27 @@ class CartController extends Controller
     public function __construct()
     {
         // Apply the middlware 'can:access-cart' to all methods of the controlelr
-        $this->middleware('can:access-cart');
+        $this->middleware('can:access-cart')->except('addToCart');
     }
  
     public function show(): View
     {
         $cart = session('cart', []);
-        return view('cart.show', compact('cart'));
+        $customer = Auth::user()->customer;
+        return view('cart.show', compact('cart', 'customer'));
     }
 
     public function addToCart(Request $request): RedirectResponse
     {
-        // Replaced with the gate 'access-cart' (middleware applied on the contructor)
         try {
+
+            if(Auth::guest()){
+                return redirect()->route('login')->with('alert-msg', 'Para adicionar produtos ao carrinho tem de estar autenticado!')->with('alert-type', 'danger');
+            }
+            if(!Auth::user()->isCustomer()){
+                return redirect()->route('home')->with('alert-msg', 'Não tem permissões para adicionar produtos ao carrinho!')->with('alert-type', 'danger');
+            }
+
             $cart = session('cart', []);
             $tshirtImageId = $request->input('idImage');
             $tshirtImageName = $request->input('nameImage');
@@ -51,9 +59,9 @@ class CartController extends Controller
             $tshirtColor = $request->input('color');
             $tshirtQuantity = $request->input('quantity');
             $tshirtUnitPrice = $request->input('unitPrice');
-            $tshirtSubTotal = $request->input('subTotal');
+            $tshirtSubTotal = $tshirtQuantity * $tshirtUnitPrice;
             $tshirtUniqueId = $tshirtImageId . $tshirtSize . $tshirtColor;
-
+            
             if (array_key_exists($tshirtUniqueId, $cart)) {
                 $url = route('cart.show');
                 $alertType = 'warning';
@@ -66,21 +74,18 @@ class CartController extends Controller
                 
                 array_push($cart[0], $tshirtUniqueId);
 
+                $tshirtPreviewImage = $this->generateTshirtPreviewImage($tshirtColor, $imageFullUrl, $tshirtUniqueId);
 
                 $cart[$tshirtUniqueId] = [
                     'imageId' => $tshirtImageId,
-                    'name' => $tshirtImageName,
-                    'tshirtPreviewImage' => 'storage/preview/'. $tshirtUniqueId . '.png',
+                    'imageName' => $tshirtImageName,
+                    'tshirtPreviewImage' => $tshirtPreviewImage,
                     'size' => $tshirtSize,
                     'color' => $tshirtColor,
                     'quantity' => $tshirtQuantity,
                     'unitPrice' => $tshirtUnitPrice,
                     'subTotal' => $tshirtSubTotal,
                 ];
-                
-                $tshirtPreviewImage = $this->generateTshirtPreviewImage($tshirtColor, $imageFullUrl, $tshirtUniqueId);
-
-
                 $request->session()->put('cart', $cart);
                 $alertType = 'success';
                 $url = route('cart.show');
@@ -96,49 +101,83 @@ class CartController extends Controller
             ->with('alert-type', $alertType);
     }
 
-    public function removeFromCart(Request $request, OrderItem $tshirt): RedirectResponse
+    public function removeFromCart(Request $request, $tshirtUniqueId): RedirectResponse
     {
         $cart = session('cart', []);
-        if (array_key_exists($tshirt->id, $cart)) {
-            unset($cart[$tshirt->id]);
+        if (array_key_exists($tshirtUniqueId, $cart)) {
+            unset($cart[$tshirtUniqueId]);
+    
+            $key = array_search($tshirtUniqueId, $cart[0]);
+            if ($key !== false) {
+                unset($cart[0][$key]);
+                $cart[0] = array_values($cart[0]);
+            }
         }
         $request->session()->put('cart', $cart);
         $url = route('cart.show');
-        $htmlMessage = "tshirt <a href='$url'>#{$tshirt->id}</a>
-                        <strong>\"{$tshirt->nome}\"</strong> foi removida do carrinho!";
+        $htmlMessage = "tshirt  <strong>\"{$tshirtUniqueId}\"</strong> foi removida do carrinho!";
         return back()
             ->with('alert-msg', $htmlMessage)
             ->with('alert-type', 'success');
+        
     }
-
     public function store(Request $request): RedirectResponse
     {
         try {
             $cart = session('cart', []);
-            $total = count($cart);
+            $total = count($cart[0]);
             if ($total < 1) {
                 $alertType = 'warning';
-                $htmlMessage = "Não é possível confirmar as inscrições porque não há disciplina no carrinho";
+                $htmlMessage = "Não é possível confirmar a encomenda, porque o carrinho está vazio!";
             } else {
-                $aluno = $request->user()->aluno;
-                DB::transaction(function () use ($aluno, $cart) {
-                    foreach ($cart as $disciplina) {
-                        $aluno->disciplinas()->attach($disciplina->id, ['repetente' => 0]);
+                $customer = Auth::user()->customer;
+                #TODO RECIBO
+                DB::connection()->enableQueryLog();
+                #Encomenda
+                $order = new Order();
+                $order->status = 'pending';
+                $order->customer_id = $customer->id;
+                $order->date = now();
+                $order->total_price = $request->input('totalPrice');
+                $order->notes = $request->input('notes');
+                $order->nif = $request->input('nif');
+                $order->address = $request->input('address');
+                $order->payment_type = $request->input('payment_type');
+                $order->payment_ref = $request->input('payment_ref');
+                $order->receipt_url = null;
+                $order->save();
+
+                DB::transaction(function () use ($cart, $order) {
+                    foreach ($cart[0] as $tshirtUniqueId) {
+                        $item = $cart[$tshirtUniqueId];
+                
+                        $orderItem = new OrderItem();
+                        $orderItem->order_id = $order->id; 
+                        $orderItem->tshirt_image_id = $item['imageId'];
+                        $orderItem->size = $item['size'];
+                        $orderItem->color_code = $item['color'];
+                        $orderItem->qty = $item['quantity'];
+                        $orderItem->unit_price = $item['unitPrice'];
+                        $orderItem->sub_total = $item['subTotal'];
+                        #$orderItem->image_name = $item['imageName'];
+                        $orderItem->save();
                     }
                 });
-                if ($total == 1) {
-                    $htmlMessage = "Foi confirmada a inscrição a 1 disciplina ao aluno #{$aluno->id} <strong>\"{$request->user()->name}\"</strong>";
-                } else {
-                    $htmlMessage = "Foi confirmada a inscrição a $total disciplinas ao aluno #{$aluno->id} <strong>\"{$request->user()->name}\"</strong>";
+                $htmlMessage = "Foi confirmada a encomenda do customer #{$customer->id} <strong>\"{$customer->name}\"</strong>" ;
+                $queryLog = DB::getQueryLog();
+                foreach ($queryLog as $query) {
+                    $htmlMessage .= "Query: " . $query['query'] . "\n";
+                    $htmlMessage .= "Bindings: " . json_encode($query['bindings']) . "\n";
                 }
+
                 $request->session()->forget('cart');
-                return redirect()->route('disciplinas.minhas')
+                return redirect()->route('orders.minhas')
                     ->with('alert-msg', $htmlMessage)
                     ->with('alert-type', 'success');
             }
             
         } catch (\Exception $error) {
-            $htmlMessage = "Não foi possível inserir as tshirts no carrinho, porque ocorreu um erro!";
+            $htmlMessage = "Não foi possível inserir as tshirts no carrinho, porque ocorreu um erro!" . $error;
             $alertType = 'danger';
         }
         return back()
@@ -157,13 +196,10 @@ class CartController extends Controller
 
     private function generateTshirtPreviewImage($tshirtColor, $imageFullUrl, $tshirtUniqueId)
     {
-        // Load the background image (white t-shirt)
         $colorImage = imagecreatefromjpeg('storage/tshirt_base/' . $tshirtColor . '.jpg');
 
-        // Load the overlay image (t-shirt design)
         $imageOnTshirt = imagecreatefrompng($imageFullUrl);
 
-        // Get the dimensions of the images
         $backgroundWidth = imagesx($colorImage);
         $backgroundHeight = imagesy($colorImage);
         $overlayWidth = imagesx($imageOnTshirt);
@@ -171,23 +207,20 @@ class CartController extends Controller
         
         $newOverlayWidth = 175;
         $newOverlayHeight = 200;
-        // Create a new image with the new dimensions
+
         $resizedImageOnTshirt = imagescale($imageOnTshirt, $newOverlayWidth, $newOverlayHeight);
 
-        // Calculate the position to center the resized image on the background image
+        
         $x = ($backgroundWidth - $newOverlayWidth) / 2;
         $y = ($backgroundHeight - $newOverlayHeight) / 2;
 
-        // Create a new image with transparent background for the overlay
         $combinedImage = imagecreatetruecolor($backgroundWidth, $backgroundHeight);
         $transparentColor = imagecolorallocatealpha($combinedImage, 0, 0, 0, 127);
         imagefill($combinedImage, 0, 0, $transparentColor);
         imagecolortransparent($combinedImage, $transparentColor);
         
-        // Copy the background image onto the combined image
         imagecopy($combinedImage, $colorImage, 0, 0, 0, 0, $backgroundWidth, $backgroundHeight);
-        
-        // Copy the overlay image onto the combined image with alpha transparency
+
         imagecopy($combinedImage, $resizedImageOnTshirt, $x, $y, 0, 0, $newOverlayWidth, $newOverlayHeight);
 
         $previewFolderPath = 'storage/preview/';

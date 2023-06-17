@@ -20,7 +20,7 @@ Auth::routes(['verify' => true]);
 Route::get('/encomendas', [OrderController::class, 'index'])->name('orders.index');
 Route::get('/encomendas/criar', [OrderController::class, 'create'])->name('orders.create');
 Route::get('/encomendas/{order}/editar', [OrderController::class, 'edit'])->name('orders.edit');
-Route::get('/encomendas/minhas', [OrderController::class, 'minhasEncomendas'])->name('encomendas.minhas');
+Route::get('/encomendas/minhas', [OrderController::class, 'minhasEncomendas'])->name('orders.minhas');
 Route::get('/encomendas/{order}', [OrderController::class, 'show'])->name('orders.show');
 
 Route::post('/encomendas', [OrderController::class, 'store'])->name('orders.store');
@@ -96,7 +96,7 @@ Route::delete('/orderItems/{orderItem}', [OrderItemController::class, 'destroy']
 
 Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
 // Remove a "orderItem"(Tshirt) from the cart:
-Route::delete('/cart/{tshirtImage}', [CartController::class, 'removeFromCart'])->name('cart.remove');
+Route::delete('/cart/{tshirtUniqueId}', [CartController::class, 'removeFromCart'])->name('cart.remove');
 // Show the cart:
 Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
 // Confirm (store) the cart and save orderItem/tshirts registration on the database:

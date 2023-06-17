@@ -129,14 +129,14 @@
                         @if (Auth::check())
                         <div class="sb-sidenav-menu-heading">Espaço Pessoal</div>
                         <a class="nav-link "
-                            href="{{ route('encomendas.minhas') }}">
+                            href="{{ route('orders.minhas') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-file-text"></i></div>
-                            Minhas encomendas
+                            Minhas encomendas #TODO
                         </a>
                         <a class="nav-link"
                             href="{{ route('tshirt_images.minhas') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-image"></i></div>
-                            Minhas Imagens
+                            Minhas Imagens #TODO
                         </a>
                         <a class="nav-link"
                             href="{{ route('cart.show') }}">

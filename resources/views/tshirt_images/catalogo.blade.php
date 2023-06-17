@@ -53,13 +53,11 @@
                                             } else {
                                                 $unitPrice = $prices->unit_price_catalog_discount;
                                             }
-                                            $subtotal = $unitPrice * $i;
                                         @endphp
-                                        <option value="{{ $i }}">{{ $i }} ({{ $subtotal }} €)</option>
+                                        <option value="{{ $i }}">{{ $i }} </option>
                                         @endfor
                                     </select>
                                     <input type="hidden" name="unitPrice" value="{{ $unitPrice }}">
-                                    <input type="hidden" name="subTotal" value="{{ $subtotal }}">
                                     <button type="submit" name="addToCart" class="btn btn-primary">
                                         <i class="fas fa-plus"></i>
                                         Adicionar ao Carrinho

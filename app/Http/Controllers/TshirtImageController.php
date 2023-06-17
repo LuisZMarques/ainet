@@ -55,7 +55,7 @@ class TshirtImageController extends Controller
 
     public function catalogo(Request $request) : View
     {
-        if(Auth::user()->isCustomer()){
+        if((Auth::check() && Auth::user()->isCustomer())){
             $customer_id = Auth::user()->id;
             
             $category = $request->input('category');
@@ -80,9 +80,32 @@ class TshirtImageController extends Controller
             $colors = Color::all();
             $prices = Price::first();
             return view('tshirt_images.catalogo', compact('tshirtImages', 'categories', 'colors', 'prices'));
-        }else{
-            return view('home')->with('alert-msg', 'Não tem permissões para ver o catálogo de imagens das t-shirts!')->with('alert-type', 'danger');
+
+        }elseif(Auth::guest()){
+            
+            $category = $request->input('category');
+            $search = $request->input('search');
+
+            $query = TshirtImage::query()
+                ->where(function ($query) {
+                    $query->whereNull('customer_id');
+                });
+
+            if ($category) {
+                $query->where('category_id', $category);
+            }
+            
+            if ($search) {
+                $query->where('name', 'LIKE', '%' . $search . '%');
+            }
+
+            $tshirtImages = $query->paginate(15);
+            $categories = Category::all();
+            $colors = Color::all();
+            $prices = Price::first();
+            return view('tshirt_images.catalogo', compact('tshirtImages', 'categories', 'colors', 'prices'));
         }
+        return view('home')->with('alert-msg', 'Não tem permissões para ver o catálogo de imagens das t-shirts!')->with('alert-type', 'danger');
     }
 
     public function create(): View

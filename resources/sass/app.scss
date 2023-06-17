@@ -58,3 +58,8 @@ textarea.form-control.height-lg{
 textarea.form-control.height-xl{
     height: 17.0rem !important;
 }
+
+.carousel-control-prev,
+.carousel-control-next {
+    background-color: grayscale($color: #222);
+}

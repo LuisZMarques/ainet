@@ -7,9 +7,9 @@
         @csrf
         @method('PUT')
         @include('customers.shared.fields', ['readonlyData' => false])
-        <div>
+        <div class="text-center">
             <button type="submit" name="ok" class="btn btn-primary">Guardar Alterações</button>
-            <a href="{{ route('customers.index') }}" class="btn btn-danger">Cancelar</a>
+            <a href="{{ route('customers.index') }}" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 @endsection

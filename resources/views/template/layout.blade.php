@@ -107,8 +107,6 @@
                                     href="{{ route('prices.index') }}">Preços</a>
                                 <a class="nav-link "
                                     href="{{ route('colors.index') }}">Cores</a>
-                                <a class="nav-link "
-                                    href="{{ route('orders.index') }}">Encomendas</a>
                             </nav>
                         </div>
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
@@ -126,7 +124,14 @@
                             </nav>
                         </div>
                         @endif
-                        @if (Auth::check())
+                        @if (Auth::check() && Auth::user()->isAdmin() || Auth::check() && Auth::user()->isCustomer())
+                        <a class="nav-link "
+                            href="{{ route('orders.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-file-text"></i></div>
+                            Encomendas
+                        </a>
+                        @endif
+                        @if (Auth::check() && Auth::user()->isCustomer())
                         <div class="sb-sidenav-menu-heading">Espaço Pessoal</div>
                         <a class="nav-link "
                             href="{{ route('orders.minhas') }}">

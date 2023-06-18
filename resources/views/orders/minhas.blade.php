@@ -1,6 +1,6 @@
 @extends('template.layout')
 
-@section('titulo', 'Encomendas do Cliente ' . $customer->user->name)
+@section('titulo', 'Encomendas do Cliente ' . Auth::user()->name)
 
 @section('main')
     <div class="container">
@@ -14,8 +14,10 @@
                     <th>Ações</th>
                 </tr>
             </thead>
+            
             <tbody>
-                @foreach ($customer->orders as $order)
+                @foreach ($orders as $order)
+                    
                     <tr>
                         <td>{{ $order->id }}</td>
                         <td>{{ $order->status }}</td>

@@ -17,16 +17,16 @@ class TshirtImage extends Model
 
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class, 'customer_id');
+        return $this->belongsTo(Customer::class, 'id');
     }
 
     public function orderItems(): HasMany
     {
-        return $this->hasMany(OrderItem::class,'id');
+        return $this->hasMany(OrderItem::class,'tshirt_image_id');
     }
 
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class, 'id');
     }
 }

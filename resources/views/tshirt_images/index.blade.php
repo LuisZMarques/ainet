@@ -32,7 +32,7 @@
                         @foreach ($tshirtImages as $tshirtImage)
                             <tr>
                                 <td> <img src="{{ asset('storage/tshirt_images/' . $tshirtImage->image_url) }}" alt="{{ $tshirtImage->name }}" style="width: 33px; height: 33px;"></td>
-                                <td>{{ $tshirtImage->category_id ? $tshirtImage->category->name : 'Nenhuma' }}</td>
+                                <td>{{ $tshirtImage->category_id ? $tshirtImage->category_id : 'Nenhuma' }}</td>
                                 <td>{{ $tshirtImage->name }}</td>
                                 <td>
                                     <a href="{{ route('tshirt_images.show', $tshirtImage->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i></a>

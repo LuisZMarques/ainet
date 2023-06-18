@@ -10,6 +10,9 @@ use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 use function imagecreatefromjpeg;
 use function imagecreatefrompng;
@@ -131,14 +134,13 @@ class CartController extends Controller
                 $htmlMessage = "Não é possível confirmar a encomenda, porque o carrinho está vazio!";
             } else {
                 $customer = Auth::user()->customer;
-                #TODO RECIBO
                 DB::connection()->enableQueryLog();
                 #Encomenda
                 $order = new Order();
                 $order->status = 'pending';
                 $order->customer_id = $customer->id;
                 $order->date = now();
-                $order->total_price = $request->input('totalPrice');
+                $order->total_price = (float) $request->input('totalPrice');
                 $order->notes = $request->input('notes');
                 $order->nif = $request->input('nif');
                 $order->address = $request->input('address');
@@ -159,11 +161,13 @@ class CartController extends Controller
                         $orderItem->qty = $item['quantity'];
                         $orderItem->unit_price = $item['unitPrice'];
                         $orderItem->sub_total = $item['subTotal'];
-                        #$orderItem->image_name = $item['imageName'];
                         $orderItem->save();
                     }
                 });
-                $htmlMessage = "Foi confirmada a encomenda do customer #{$customer->id} <strong>\"{$customer->name}\"</strong>" ;
+
+                $this->generateReceipt($order);
+
+                $htmlMessage = "Foi confirmada a encomenda do customer #{$customer->id} <strong>\"{$customer->user->name}\"</strong>" ;
                 $queryLog = DB::getQueryLog();
                 foreach ($queryLog as $query) {
                     $htmlMessage .= "Query: " . $query['query'] . "\n";
@@ -232,5 +236,27 @@ class CartController extends Controller
         imagepng($combinedImage, $previewImagePath);
 
         return $previewImagePath;
+    }
+
+    private function generateReceipt(Order $order): void
+    {
+        $pdf = new Dompdf();
+        $html = view('receipt', compact('order'))->render();
+
+        $pdf->loadHtml($html);
+        $pdf->render();
+
+        $filename = 'receipt_' . $order->id . '.pdf';
+
+        $storageDirectory =  'pdf_receipts/';
+
+        if (!file_exists($storageDirectory)) {
+            mkdir($storageDirectory, 0777, true);
+        }
+
+        Storage::put($storageDirectory . '/' . $filename, $pdf->output());
+
+        $order->receipt_url = $filename;
+        $order->save();
     }
 }

@@ -21,10 +21,10 @@ class Customer extends Model
 
     public function tshirtImages(): HasMany
     {
-        return $this->hasMany(TshirtImage::class, 'id');
+        return $this->hasMany(TshirtImage::class, 'customer_id');
     }
     public function orders(): HasMany
     {
-        return $this->hasMany(Order::class, 'id');
+        return $this->hasMany(Order::class, 'customer_id');
     }
 }

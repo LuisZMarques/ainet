@@ -28,9 +28,9 @@
 <div class="mb-3">
     <label for="default_payment_type" class="form-label">Tipo Pagamento</label>
     <select name="default_payment_type" id="default_payment_type" class="form-select" {{ $disabledStr }} >
-        <option {{ old('default_payment_type', (string) $customer->default_payment_type) ? 'selected' : '' }} value="PAYPAL">PAYPAL</option>
-        <option {{ old('default_payment_type', (string) $customer->default_payment_type) ? 'selected' : '' }} value="VISA">VISA</option>
-        <option {{ old('default_payment_type', (string) $customer->default_payment_type) ? 'selected' : '' }} value="MC">MasterCard {{$customer->default_payment_type}}</option>
+        <option {{ old('default_payment_type', $customer->default_payment_type) ? 'selected' : '' }} value="PAYPAL">PAYPAL</option>
+        <option {{ old('default_payment_type', $customer->default_payment_type) ? 'selected' : '' }} value="VISA">VISA</option>
+        <option {{ old('default_payment_type', $customer->default_payment_type) ? 'selected' : '' }} value="MC">MasterCard</option>
     </select>
 </div>
 <div class="mb-3">

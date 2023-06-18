@@ -15,16 +15,16 @@ class OrderItem extends Model
 
     public function order(): BelongsTo
     {
-        return $this->belongsTo(Order::class, 'orders_id');
+        return $this->belongsTo(Order::class, 'id');
     }
 
     public function tshirtImage(): BelongsTo
     {
-        return $this->belongsTo(TshirtImage::class, 'tshirt_images_id');
+        return $this->belongsTo(TshirtImage::class, 'id');
     }
 
     public function color(): BelongsTo
     {
-        return $this->belongsTo(Color::class, 'color_code');
+        return $this->belongsTo(Color::class, 'code');
     }
 }

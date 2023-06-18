@@ -3,7 +3,7 @@
 @section('titulo', 'Detalhes da Encomenda')
 
 @section('main')
-    @include('orders.shared.fields')
+    @include('orders.shared.fields',['readonlyData' => true])
 
     <div class="d-flex justify-content-between">
         <div class="d-flex">

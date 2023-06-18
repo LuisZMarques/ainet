@@ -31,7 +31,7 @@
                         @foreach ($orders as $order)
                             <tr>
                                 <td>{{ $order->status }}</td>
-                                <td>{{ $order->customer->user->name }}</td>
+                                <td>{{ $order->customer_id }}</td>
                                 <td>{{ $order->date }}</td>
                                 <td>{{ $order->total_price }}€</td>
                                 <td>

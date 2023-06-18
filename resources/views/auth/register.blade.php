@@ -57,7 +57,7 @@
                             <label for="address" class="col-md-4 col-form-label text-md-end">{{ __('Endereço') }}</label>
 
                             <div class="col-md-6">
-                                <input id="address" type="text" class="form-control @error('address') is-invalid @enderror" name="address" value="{{ old('address') }}" required autocomplete="address" autofocus>
+                                <input id="address" type="text" class="form-control @error('address') is-invalid @enderror" name="address" value="{{ old('address') }}" autocomplete="address" autofocus>
 
                                 @error('address')
                                     <span class="invalid-feedback" role="alert">
@@ -73,6 +73,7 @@
               
                             <div class="col-md-6">
                                 <select name="tipoPagamento" id="tipoPagamento">
+                                    <option value="">Nenhum</option>
                                     <option value="PAYPAL">Paypal</option>
                                     <option value="VISA">Visa</option>
                                     <option value="MC">MasterCard</option>
@@ -89,7 +90,7 @@
                             <label for="refPagamento" class="col-md-4 col-form-label text-md-end">{{ __('Referência de Pagamento') }}</label>
 
                             <div class="col-md-6">
-                                <input id="refPagamento" type="text" class="form-control @error('refPagamento') is-invalid @enderror" name="refPagamento" value="{{ old('refPagamento') }}" required autocomplete="refPagamento" autofocus>
+                                <input id="refPagamento" type="text" class="form-control @error('refPagamento') is-invalid @enderror" name="refPagamento" value="{{ old('refPagamento') }}"  autocomplete="refPagamento" autofocus>
 
                                 @error('refPagamento')
                                     <span class="invalid-feedback" role="alert">

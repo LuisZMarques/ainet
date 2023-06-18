@@ -17,6 +17,6 @@ class Color extends Model
 
     public function orderItems(): BelongsToMany
     {
-        return $this->BelongsToMany(OrderItem::class, 'code');
+        return $this->BelongsToMany(OrderItem::class, 'color_code');
     }
 }

@@ -13,7 +13,7 @@
 </div>
 <div class="mb-3">
     <label for="customer_id" class="form-label">ID do Cliente</label>
-    <input type="text" class="form-control" id="customer_id" name="customer_id" {{ $disabledStr }} value="{{ old('name', $order->customer->id) }}">
+    <input type="text" class="form-control" id="customer_id" name="customer_id" {{ $disabledStr }} value="{{ old('customer_id', $order->customer_id) }}">
 </div>
 <div class="mb-3">
     <label for="date" class="form-label">Data da Encomenda</label>

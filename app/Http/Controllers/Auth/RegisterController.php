@@ -10,7 +10,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 class RegisterController extends Controller
 {
     /*
@@ -71,6 +71,7 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return DB::transaction(function () use ($data) {
+            Log::debug('Registration data:', $data);
             $newUser = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
@@ -85,6 +86,7 @@ class RegisterController extends Controller
                 'default_payment_ref' => $data['RefPagamento'],
                 'id' => $newUser->id,
             ]);
+            dd($data);
             return $newUser;
         });
     }

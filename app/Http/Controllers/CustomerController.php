@@ -14,7 +14,7 @@ class CustomerController extends Controller
     public function index(Request $request) : View
     {   
         if (Auth::user()->isAdmin()) {
-            $query = Customer::query();
+            $query = Customer::with('user');
             $search = $request->input('search');
             if ($search) {
                 $query->whereHas('user', function ($q) use ($search) {

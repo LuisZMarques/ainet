@@ -53,9 +53,8 @@ class OrderController extends Controller
     public function minhasEncomendas(Request $request): View
     {
         if(Auth::user()->isCustomer()) {
-            $customer = $request->user()->customer;
-            $encomendas = $customer->orders;
-            return view('orders.minhas', compact('encomendas', 'customer'));
+            $orders = $request->user()->customer->orders;
+            return view('orders.minhas', compact('orders'));
         }else{
             return view('home')->with('alert-msg', 'Como é cliente não tem acesso a encomendas.')->with('alert-type', 'danger');
         }

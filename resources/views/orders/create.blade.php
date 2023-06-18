@@ -7,7 +7,7 @@
         <form method="POST" action="{{ route('orders.store') }}">
             @csrf
             @include('orders.shared.fields')
-            <div>
+            <div class="text-center"
                 <button type="submit" name="ok">Guardar Encomenda</button>
             </div>
         </form>

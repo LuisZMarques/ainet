@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Color;
+use App\Models\OrderItem;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -68,6 +69,11 @@ class ColorController extends Controller
     public function destroy(Color $color): RedirectResponse
     {
         try {
+            $isUsed = OrderItem::where('color_code', $color->code)->count();
+            if ($isUsed > 0) {
+                throw new \Exception('A cor está sendo usada numa tshirt ou mais.');
+            }
+    
             $color->delete();
 
             return redirect()->route('colors.index');

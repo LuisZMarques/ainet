@@ -10,7 +10,7 @@
 
         <div>
             <button type="submit" class="btn btn-primary">Guardar Alterações</button>
-            <a href="{{ route('prices.index') }}" class="btn btn-danger">Cancelar</a>
+            <a href="{{ route('prices.index') }}" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 @endsection

@@ -63,7 +63,7 @@ class CategoryController extends Controller
     {
         if (Auth::user()->isAdmin()) {
             $category->update($request->all());
-            return view('categories.edit', compact('category'));
+            return view('categories.show', compact('category'));
         } else {
             return view('home')->with('alert-msg', 'Não tem permissões para editar categorias!')->with('alert-type', 'danger');
         }
@@ -71,37 +71,49 @@ class CategoryController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        Category::create($request->all());
-        return redirect()->route('categories.index');
+        if (Auth::user()->isAdmin()) {
+            Category::create($request->all());
+            return redirect()->route('categories.index')
+                ->with('alert-msg', 'Categoria criada com sucesso!')
+                ->with('alert-type', 'success');
+        } else {
+            return redirect()->route('home')
+                ->with('alert-msg', 'Não tem permissões para criar categorias!')
+                ->with('alert-type', 'danger');
+        }
     }
-
-    
 
     public function destroy(Category $category): RedirectResponse
     {
-        try {
-            $images = DB::table('tshirt_images')->where('category_id', $category->id)->count();
-            
-            if ($images == 0) {
-                DB::transaction(function () use ($category) {
-                    $category->delete();
-                });
+        if (Auth::user()->isAdmin()) {
+            try {
+                $images = DB::table('tshirt_images')->where('category_id', $category->id)->count();
                 
-                return redirect()->route('categories.index')
-                    ->with('alert-msg', "Categoria #{$category->id} \"{$category->name}\" apagada com sucesso!")
-                    ->with('alert-type', 'success');
-            } else {
-                return redirect()->route('categories.index')
-                    ->with('alert-msg', "Não foi possível apagar a categoria #{$category->id} \"{$category->name}\" porque existem imagens associadas a esta categoria!")
-                    ->with('alert-type', 'danger');
+                if ($images == 0) {
+                    DB::transaction(function () use ($category) {
+                        $category->delete();
+                    });
+                    
+                    return redirect()->route('categories.index')
+                        ->with('alert-msg', "Categoria #{$category->id} \"{$category->name}\" apagada com sucesso!")
+                        ->with('alert-type', 'success');
+                } else {
+                    return redirect()->route('categories.index')
+                        ->with('alert-msg', "Não foi possível apagar a categoria #{$category->id} \"{$category->name}\" porque existem imagens associadas a esta categoria!")
+                        ->with('alert-type', 'danger');
+                }
+            } catch (\Exception $error) {
+                $url = route('categories.index');
+                $htmlMessage = "Não foi possível apagar a categoria <a href='$url'>#{$category->id}</a> <strong>\"{$category->name}\"</strong> porque ocorreu um erro!" . $error->getMessage();
+                $alertType = 'danger';
             }
-        } catch (\Exception $error) {
-            $url = route('categories.index');
-            $htmlMessage = "Não foi possível apagar a categoria <a href='$url'>#{$category->id}</a> <strong>\"{$category->name}\"</strong> porque ocorreu um erro!" . $error->getMessage();
-            $alertType = 'danger';
+            return back()
+                ->with('alert-msg', $htmlMessage)
+                ->with('alert-type', $alertType);
+        }else {
+            return redirect()->route('home')
+                ->with('alert-msg', 'Não tem permissões para apagar categorias!')
+                ->with('alert-type', 'danger');
         }
-        return back()
-            ->with('alert-msg', $htmlMessage)
-            ->with('alert-type', $alertType);
     }
 }

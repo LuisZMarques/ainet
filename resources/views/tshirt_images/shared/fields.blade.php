@@ -2,23 +2,25 @@
     $disabledStr = $readonlyData ?? false ? 'disabled' : '';
 @endphp
 
-<div class="mb-3" @if(Auth::user()->isAdmin()) hidden @endunless>
+<div class="mb-3" @if(Auth::user()->isAdmin()) hidden @endif>
     <label for="customer_id" class="form-label">Cliente id:</label>
     <input type="text" class="form-control" id="customer_id" name="customer_id" {{ $disabledStr }} value="{{isset($customer) ? old('customer_id', $customer->id) : ' '}}">
 </div>
 
-<div class="mb-3" @unless(Auth::user()->isAdmin()) hidden @endif>
+<div class="mb-3" @unless(Auth::user()->isAdmin()) hidden @endunless>
+    @if ($tshirtImage && $tshirtImage->category)
     <label for="category_id" class="form-label">Categoria:</label>
-    <select class="form-select" id="category_id" name="category_id" {{ $disabledStr }} >
-        @if ($disabledStr == 'disabled')
-            <option value="{{ $tshirtImage->category->id }}">{{ $tshirtImage->category->name }}</option>
-        @else
-            @foreach ($categories as $category)
-                <option {{ $tshirtImage->category_id== old('category_id', $category->id) ? 'selected' : '' }} value="{{ $category->id }}">{{ $category->name }}</option>
-            @endforeach
-        @endif
-        
-    </select>
+    
+        <select class="form-select" id="category_id" name="category_id" {{ $disabledStr }} >
+            @if ($disabledStr == 'disabled')
+                <option value="{{ $tshirtImage->category->id }}">{{ $tshirtImage->category->name }}</option>
+            @else
+                @foreach ($categories as $category)
+                    <option {{ $tshirtImage->category_id== old('category_id', $category->id) ? 'selected' : '' }} value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            @endif
+        </select>
+    @endif
 </div>
 
 <div class="mb-3">

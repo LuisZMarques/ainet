@@ -80,74 +80,78 @@
                         <a class="nav-link {{ Route::currentRouteName() == 'root' ? 'active' : '' }}"
                             href="{{ route('root') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-home"></i></div>
-                            Dashboard
+                            Página Inicial
                         </a>
-                        <a class="nav-link"
-                            href="{{ route('tshirt_images.catalogo') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                            Catalogo
-                        </a>
-                        @if (Auth::check() && Auth::user()->isAdmin())
-                        <div class="sb-sidenav-menu-heading">Gestão</div>
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
-                            data-bs-target="#collapseCurricular" aria-expanded="false"
-                            aria-controls="collapseCurricular">
-                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                            Logística
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                        </a>
-                        <div class="collapse" id="collapseCurricular" aria-labelledby="headingOne"
-                            data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link "
-                                    href="{{ route('categories.index') }}">Categorias</a>
-                                <a class="nav-link "
-                                    href="{{ route('tshirt_images.index') }}">Imagens da Loja</a>
-                                <a class="nav-link "
-                                    href="{{ route('prices.index') }}">Preços</a>
-                                <a class="nav-link "
-                                    href="{{ route('colors.index') }}">Cores</a>
-                            </nav>
-                        </div>
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
-                            data-bs-target="#collapseRecursosHumanos" aria-expanded="false"
-                            aria-controls="collapseRecursosHumanos">
-                            <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
-                            Recursos Humanos
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                        </a>
-                        <div class="collapse" id="collapseRecursosHumanos" aria-labelledby="headingTwo"
-                            data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link "
-                                    href="{{ route('customers.index') }}">Clientes</a>
-                            </nav>
-                        </div>
+                        @if (Auth::guest() || Auth::user()->isCustomer())
+                            <a class="nav-link"
+                                href="{{ route('tshirt_images.catalogo') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                Catalogo
+                            </a>
                         @endif
-                        @if (Auth::check() && Auth::user()->isAdmin() || Auth::check() && Auth::user()->isCustomer())
-                        <a class="nav-link "
-                            href="{{ route('orders.index') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-file-text"></i></div>
-                            Encomendas
-                        </a>
+                        @if (Auth::check() && (Auth::user()->isEmployee() || Auth::user()->isAdmin()))
+                            <div class="sb-sidenav-menu-heading">Gestão</div>
+                            <a class="nav-link "
+                                href="{{ route('orders.index') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-file-text"></i></div>
+                                Encomendas
+                            </a>
+                        @endif
+                        @if (Auth::check() && Auth::user()->isAdmin())
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                                data-bs-target="#collapseCurricular" aria-expanded="false"
+                                aria-controls="collapseCurricular">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Logística
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseCurricular" aria-labelledby="headingOne"
+                                data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link "
+                                        href="{{ route('categories.index') }}">Categorias</a>
+                                    <a class="nav-link "
+                                        href="{{ route('tshirt_images.index') }}">Imagens da Loja</a>
+                                    <a class="nav-link "
+                                        href="{{ route('prices.index') }}">Preços</a>
+                                    <a class="nav-link "
+                                        href="{{ route('colors.index') }}">Cores</a>
+                                </nav>
+                            </div>
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                                data-bs-target="#collapseRecursosHumanos" aria-expanded="false"
+                                aria-controls="collapseRecursosHumanos">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
+                                Recursos Humanos
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseRecursosHumanos" aria-labelledby="headingTwo"
+                                data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link "
+                                        href="{{ route('customers.index') }}">Clientes</a>
+                                    <a class="nav-link "
+                                        href="{{ route('users.index') }}">Utilizadores</a>
+                                </nav>
+                            </div>
                         @endif
                         @if (Auth::check() && Auth::user()->isCustomer())
-                        <div class="sb-sidenav-menu-heading">Espaço Pessoal</div>
-                        <a class="nav-link "
-                            href="{{ route('orders.minhas') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-file-text"></i></div>
-                            Minhas encomendas #TODO
-                        </a>
-                        <a class="nav-link"
-                            href="{{ route('tshirt_images.minhas') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-image"></i></div>
-                            Minhas Imagens #TODO
-                        </a>
-                        <a class="nav-link"
-                            href="{{ route('cart.show') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
-                            Carrinho
-                        </a>
+                            <div class="sb-sidenav-menu-heading">Espaço Pessoal</div>
+                            <a class="nav-link "
+                                href="{{ route('orders.minhas') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-file-text"></i></div>
+                                Minhas encomendas 
+                            </a>
+                            <a class="nav-link"
+                                href="{{ route('tshirt_images.minhas') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-image"></i></div>
+                                Minhas Imagens 
+                            </a>
+                            <a class="nav-link"
+                                href="{{ route('cart.show') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
+                                Carrinho
+                            </a>
                         @endif
                     </div>
                 </div>

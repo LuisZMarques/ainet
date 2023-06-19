@@ -54,7 +54,9 @@ class ColorController extends Controller
     {
         if (Auth::user()->isAdmin()) {
             $color->update($request->all());
-            return view('colors.edit', compact('color'));
+            return view('colors.show', compact('color'))
+                ->with('alert-msg', "Cor <strong>\"{$color->name}\"</strong> atualizada com sucesso!")
+                ->with('alert-type', 'success');
         } else {
             return view('home')->with('alert-msg', 'Não tem permissões para editar cores!')->with('alert-type', 'danger');
         }
@@ -62,30 +64,46 @@ class ColorController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        Color::create($request->all());
-        return redirect()->route('colors.index');
+        if (Auth::user()->isAdmin()) {
+            Color::create($request->all());
+            return redirect()->route('colors.index')
+                ->with('alert-msg', "Cor <strong>\"{$request->name}\"</strong> criada com sucesso!")
+                ->with('alert-type', 'success');
+        } else {
+            return redirect()->route('home')
+                ->with('alert-msg', 'Não tem permissões para criar cores!')
+                ->with('alert-type', 'danger');
+        }
     }
 
     public function destroy(Color $color): RedirectResponse
     {
-        try {
-            $isUsed = OrderItem::where('color_code', $color->code)->count();
-            if ($isUsed > 0) {
-                throw new \Exception('A cor está sendo usada numa tshirt ou mais.');
+        if (Auth::user()->isAdmin()) {
+            try {
+                $isUsed = OrderItem::where('color_code', $color->code)->count();
+                if ($isUsed > 0) {
+                    throw new \Exception('A cor está sendo usada numa tshirt ou mais.');
+                }
+        
+                $color->delete();
+
+                return redirect()->route('colors.index')
+                    ->with('alert-msg', "Cor <strong>\"{$color->name}\"</strong> apagada com sucesso!")
+                    ->with('alert-type', 'success');
+
+            } catch (\Exception $error) {
+                $url = route('colors.index');
+                $htmlMessage = "Não foi possível apagar a cor <a href='$url'>#{$color->id}</a> <strong>\"{$color->name}\"</strong> porque ocorreu um erro!" . $error->getMessage();
+                $alertType = 'danger';
             }
-    
-            $color->delete();
-
-            return redirect()->route('colors.index');
-
-        } catch (\Exception $error) {
-            $url = route('colors.index');
-            $htmlMessage = "Não foi possível apagar a cor <a href='$url'>#{$color->id}</a> <strong>\"{$color->name}\"</strong> porque ocorreu um erro!" . $error->getMessage();
-            $alertType = 'danger';
+            return back()
+                ->with('alert-msg', $htmlMessage)
+                ->with('alert-type', $alertType);
+        } else {
+            return redirect()->route('home')
+                ->with('alert-msg', 'Não tem permissões para apagar cores!')
+                ->with('alert-type', 'danger');
         }
-        return back()
-            ->with('alert-msg', $htmlMessage)
-            ->with('alert-type', $alertType);
     }
     
 }

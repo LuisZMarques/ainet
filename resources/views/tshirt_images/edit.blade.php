@@ -9,15 +9,14 @@
 
         <div class="mb-3"style="text-align: center;" >
             <div>
-                <img src="{{ asset('storage/tshirt_images/' . $tshirtImage->image_url) }}" alt="Foto de Perfil" class="img-thumbnail" style="max-width: 200px ; align-self:center">
+                <img src="{{ asset('storage/tshirt_images/' . $tshirtImage->image_url) }}" alt="Imagem" class="img-thumbnail" style="max-width: 200px ; align-self:center">
             </div>
             <div>
                 <button type="button" class="btn btn-danger mt-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    Upload Nova Imagem #TODO
+                    Upload Nova Imagem 
                 </button>
             </div>
         </div>
-
 
         @include('tshirt_images.shared.fields', ['readonlyData' => false])
 

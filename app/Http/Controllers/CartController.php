@@ -10,9 +10,6 @@ use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Dompdf\Dompdf;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 
 use function imagecreatefromjpeg;
 use function imagecreatefrompng;
@@ -45,7 +42,6 @@ class CartController extends Controller
     public function addToCart(Request $request): RedirectResponse
     {
         try {
-
             if(Auth::guest()){
                 return redirect()->route('login')->with('alert-msg', 'Para adicionar produtos ao carrinho tem de estar autenticado!')->with('alert-type', 'danger');
             }
@@ -165,8 +161,6 @@ class CartController extends Controller
                     }
                 });
 
-                $this->generateReceipt($order);
-
                 $htmlMessage = "Foi confirmada a encomenda do customer #{$customer->id} <strong>\"{$customer->user->name}\"</strong>" ;
                 $queryLog = DB::getQueryLog();
                 foreach ($queryLog as $query) {
@@ -238,25 +232,5 @@ class CartController extends Controller
         return $previewImagePath;
     }
 
-    private function generateReceipt(Order $order): void
-    {
-        $pdf = new Dompdf();
-        $html = view('receipt', compact('order'))->render();
 
-        $pdf->loadHtml($html);
-        $pdf->render();
-
-        $filename = 'receipt_' . $order->id . '.pdf';
-
-        $storageDirectory =  'pdf_receipts/';
-
-        if (!file_exists($storageDirectory)) {
-            mkdir($storageDirectory, 0777, true);
-        }
-
-        Storage::put($storageDirectory . '/' . $filename, $pdf->output());
-
-        $order->receipt_url = $filename;
-        $order->save();
-    }
 }

@@ -3,11 +3,11 @@
 @section('titulo', 'Imagens das Camisas do Cliente ' . $customer->user->name)
 
 @section('main')
-    <div class="container">
+    <a href="{{ route('tshirt_images.create') }}" class="btn btn-primary mb-3">Nova Imagem de Tshirt</a>
+    <div class="table-responsive">
         <table class="table table-dark table-bordered text-center">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Nome</th>
                     <th>Descrição</th>
                     <th>URL da Imagem</th>
@@ -17,16 +17,16 @@
             <tbody>
                 @foreach ($customer->tshirtImages as $tshirtImage)
                     <tr>
-                        <td>{{ $tshirtImage->id }}</td>
                         <td>{{ $tshirtImage->name }}</td>
                         <td>{{ $tshirtImage->description }}</td>
                         <td>{{ $tshirtImage->image_url }}</td>
                         <td>
-                            <a href="{{ route('tshirt_images.edit', $tshirtImage->id) }}" class="btn btn-primary">Editar</a>
-                            <form action="/tshirt_images/{{ $tshirtImage->id }}" method="POST" style="display: inline-block;">
+                            <a href="{{ route('tshirt_images.show', $tshirtImage->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i></a>
+                            <a href="{{ route('tshirt_images.edit', $tshirtImage->id) }}" class="btn btn-secondary btn-sm"><i class="fas fa-pencil-alt"></i></a>
+                            <form method="POST" action="{{ route('tshirt_images.destroy', $tshirtImage->id) }}" style="display: inline-block;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Excluir</button>
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir esta imagem de T-Shirt?')"><i class="fas fa-trash"></i></button>
                             </form>
                         </td>
                     </tr>
@@ -34,4 +34,5 @@
             </tbody>
         </table>
     </div>
+
 @endsection

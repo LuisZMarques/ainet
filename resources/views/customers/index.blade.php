@@ -13,6 +13,7 @@
                 <table class="table table-dark table-striped" style="background-color: #f1f1f1;">
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Nome</th>
                             <th>Email</th>
                             <th>Nif</th>
@@ -22,6 +23,7 @@
                     <tbody>
                         @foreach ($customers as $customer)
                         <tr>
+                            <td>{{ $customer->id }}</td>
                             <td>{{ $customer->user->name }}</td>
                             <td>{{ $customer->user->email }}</td>
                             <td>{{ $customer->nif }}</td>
@@ -32,7 +34,7 @@
                                     <form method="POST" action="{{ route('customers.destroy', $customer->id) }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem a certeza?')"><i class='fas fa-trash'></i></button>
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Também vai eliminar todas as encomendas, imagens relacionadas com este Cliente! Tem a certeza? ')"><i class='fas fa-trash'></i></button>
                                     </form>
                                 </div>
                             </td>

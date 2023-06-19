@@ -20,6 +20,7 @@
                 <table class="table table-dark table-striped" style="background-color: #f1f1f1;">
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Status</th>
                             <th>Cliente</th>
                             <th>Data</th>
@@ -30,6 +31,7 @@
                     <tbody>
                         @foreach ($orders as $order)
                             <tr>
+                                <td>{{ $order->id }}</td>
                                 <td>{{ $order->status }}</td>
                                 <td>{{ $order->customer_id }}</td>
                                 <td>{{ $order->date }}</td>
@@ -38,11 +40,13 @@
                                 <div class="d-flex justify-content-center">
                                     <a href="{{ route('orders.show', $order->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i></a>
                                     <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-secondary btn-sm "><i class="fas fa-pencil-alt"></i></a>
-                                    <form method="POST" action="{{ route('orders.destroy', $order->id) }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem a certeza?')"><i class='fas fa-trash'></i></button>
-                                    </form>
+                                    @if(Auth::user()->isAdmin())
+                                        <form method="POST" action="{{ route('orders.destroy', $order->id) }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem a certeza?')"><i class='fas fa-trash'></i></button>
+                                        </form>
+                                    @endif
                                 </div>
                                 </td>
                             </tr>

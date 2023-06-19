@@ -10,6 +10,7 @@ use App\Http\Controllers\TshirtImageController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\UserController;
 
 Route::view('/', 'home')->name('root');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -22,6 +23,9 @@ Route::get('/encomendas/minhas', [OrderController::class, 'minhasEncomendas'])->
 
 //Clientes
 Route::resource('customers', CustomerController::class);
+
+//Utilizadores
+Route::resource('users', UserController::class);
 
 //Imagens Tshirt
 Route::get('/catalogo', [TshirtImageController::class, 'catalogo'])->name('tshirt_images.catalogo');

@@ -15,7 +15,11 @@
         </div>
         <div class="d-flex">
             <a href="{{ route('users.edit', $user) }}" class="btn btn-primary">Editar</a>
-            <a href="{{ route('users.destroy', $user) }}" class="btn btn-danger">Eliminar</a>
+            <form method="POST" action="{{ route('users.destroy', $user) }}" style="display: inline-block;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este cliente?')">Eliminar</button>
+            </form>
         </div>
     </div>
 @endsection

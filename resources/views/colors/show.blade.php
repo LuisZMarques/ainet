@@ -12,7 +12,11 @@
         </div>
         <div class="d-flex">
             <a href="{{ route('colors.edit', $color->code) }}" class="btn btn-primary">Editar</a>
-            <a href="{{ route('colors.destroy', '$color->code') }}" class="btn btn-danger">Eliminar</a>
+            <form method="POST" action="{{ route('colors.destroy', $color->code) }}" style="display: inline-block;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta cor?')">Eliminar</button>
+            </form>
         </div>
     </div>
 @endsection

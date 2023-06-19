@@ -9,6 +9,10 @@ use Illuminate\Http\RedirectResponse;
 
 class PriceController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Price::class, 'price');
+    }
     public function index() : View
     {
         $price = Price::all()->first();

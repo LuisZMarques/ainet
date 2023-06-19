@@ -14,43 +14,38 @@ use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Order::class, 'order');
+    }
+
     public function index(Request $request) : View
     {
-        if (Auth::user()->isAdmin() || Auth::user()->isEmployee()) {
-        
-            $query = Order::query();
+        $query = Order::query();
 
-            // Filtro de estado
-            $status = $request->input('status');
-            if ($status) {
-                $query->where('status', $status);
-            }
-
-            // Filtro de pesquisa por nome do cliente
-            $search = $request->input('search');
-            if ($search) {
-                $query->whereHas('customer.user', function ($q) use ($search) {
-                    $q->where('name', 'LIKE', '%' . $search . '%');
-                });
-            }
-
-            $orders = $query->paginate(15);
-            
-            return view('orders.index', compact('orders'));
-
-        } else {
-            return view('home')->with('alert-msg', 'Não tem permissões para ver encomendas!')->with('alert-type', 'danger');
+        // Filtro de estado
+        $status = $request->input('status');
+        if ($status) {
+            $query->where('status', $status);
         }
+
+        // Filtro de pesquisa por nome do cliente
+        $search = $request->input('search');
+        if ($search) {
+            $query->whereHas('customer.user', function ($q) use ($search) {
+                $q->where('name', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        $orders = $query->paginate(15);
+        
+        return view('orders.index', compact('orders'));
     }
     
 
     public function create(): View
     {  
-        if(Auth::user()->isCustomer())
-            return view('orders.create');
-        else{
-            return view('home')->with('alert-msg', 'Não tem permissões para criar encomendas!')->with('alert-type', 'danger');
-        }
+        return view('orders.create');
     }
 
     public function show(Order $order): View
@@ -65,73 +60,59 @@ class OrderController extends Controller
 
     public function minhasEncomendas(Request $request): View
     {
-        if(Auth::user()->isCustomer()) {
-            $query = Order::query()->where('customer_id', $request->user()->customer->id);
+        $this->authorize('minhasEncomendas', Order::class);
 
-            // Filtro de estado
-            $status = $request->input('status');
-            if ($status) {
-                $query->where('status', $status);
-            }
-    
-            // Filtro de pesquisa por nome do cliente
-            $search = $request->input('search');
-            if ($search) {
-                $query->whereHas('customer.user', function ($q) use ($search) {
-                    $q->where('name', 'LIKE', '%' . $search . '%');
-                });
-            }
-    
-            $orders = $query->paginate(15);
-            
-            return view('orders.minhas', compact('orders'));
-        }else{
-            return view('home')->with('alert-msg', 'Como não é cliente não tem acesso a encomendas próprias.')->with('alert-type', 'danger');
+        $query = Order::query()->where('customer_id', $request->user()->customer->id);
+
+        // Filtro de estado
+        $status = $request->input('status');
+        if ($status) {
+            $query->where('status', $status);
         }
+
+        // Filtro de pesquisa por nome do cliente
+        $search = $request->input('search');
+        if ($search) {
+            $query->whereHas('customer.user', function ($q) use ($search) {
+                $q->where('name', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        $orders = $query->paginate(15);
+        
+        return view('orders.minhas', compact('orders'));
     }
 
     public function update(Request $request, Order $order): RedirectResponse
     {   
-        if(Auth::user()->isAdmin() || Auth::user()->isEmployee()){
-            $order->update($request->all());
+        $order->update($request->all());
 
-            if($request->status == 'closed'){
-                $this->generateReceipt($order);
-            }
-            return redirect()->route('orders.index')
-                ->with('alert-msg', "Encomenda #{$order->id} atualizada com sucesso!")
-                ->with('alert-type', 'success');
-        }else{
-            return redirect()->route('home')->with('alert-msg', 'Não tem permissões para atualizar encomendas!')->with('alert-type', 'danger');
+        if($request->status == 'closed'){
+            $this->generateReceipt($order);
         }
+        return redirect()->route('orders.index')
+            ->with('alert-msg', "Encomenda #{$order->id} atualizada com sucesso!")
+            ->with('alert-type', 'success');
     }
 
     public function store(Request $request): RedirectResponse
     {
-        if(Auth::user()->isCustomer()){
-            Order::create($request->all());
+        Order::create($request->all());
 
-            return redirect()->route('orders.index')
-                ->with('alert-msg', 'Encomenda criada com sucesso!')
-                ->with('alert-type', 'success');
-        }else{
-            return redirect()->route('home')->with('alert-msg', 'Não tem permissões para criar encomendas!')->with('alert-type', 'danger');
-        }
+        return redirect()->route('orders.index')
+            ->with('alert-msg', 'Encomenda criada com sucesso!')
+            ->with('alert-type', 'success');
     }
 
     public function destroy(Order $order): RedirectResponse
     {   
-        if(Auth::user()->isAdmin()){
-            $order->orderItems()->delete();
+        $order->orderItems()->delete();
 
-            $order->delete();
+        $order->delete();
 
-            return redirect()->route('orders.index')             
-                ->with('alert-msg', "Order #{$order->id} apagada com sucesso!")
-                ->with('alert-type', 'success');
-        }else{
-            return redirect()->route('home')->with('alert-msg', 'Não tem permissões para apagar encomendas!')->with('alert-type', 'danger');
-        }
+        return redirect()->route('orders.index')             
+            ->with('alert-msg', "Order #{$order->id} apagada com sucesso!")
+            ->with('alert-type', 'success');
     }
 
     private function generateReceipt(Order $order): void

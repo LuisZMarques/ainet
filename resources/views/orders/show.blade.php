@@ -4,7 +4,7 @@
 
 @section('main')
 
-    
+
 
     @include('orders.shared.fields', ['readonlyData' => true])
 
@@ -17,7 +17,11 @@
                 <a href="{{ route('orders.edit', $order) }}" class="btn btn-primary">Editar</a>
             @endif
             @if(Auth::user()->isAdmin())
-                <a href="{{ route('orders.destroy', $order) }}" class="btn btn-danger">Eliminar</a>
+                <form method="POST" action="{{ route('orders.destroy', $order) }}" style="display: inline-block;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta encomenda?')">Eliminar</button>
+                </form>
             @endif
         </div>
     </div>

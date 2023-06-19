@@ -19,6 +19,7 @@ class Customer extends Model
         return $this->belongsTo(User::class, 'id');
     }
 
+    
     public function tshirtImages(): HasMany
     {
         return $this->hasMany(TshirtImage::class, 'customer_id');

@@ -16,7 +16,11 @@
             </div>
             <div class="d-flex">
                 <a href="{{ route('tshirt_images.edit', $tshirtImage->id ) }}" class="btn btn-primary">Editar</a>
-                <a href="{{ route('tshirt_images.destroy', $tshirtImage->id ) }}" class="btn btn-danger">Eliminar</a>
+                <form method="POST" action="{{ route('tshirt_images.destroy', $tshirtImage->id) }}" style="display: inline-block;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta imagem de T-Shirt?')">Eliminar</button>
+                </form>
             </div>
         </div>
     </div>

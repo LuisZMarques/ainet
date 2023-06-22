@@ -2,7 +2,7 @@
     $disabledStr = $readonlyData ?? false ? 'disabled' : '';
 @endphp
 
-<div class="mb-3" @if(Auth::user()->isAdmin()) hidden @endif>
+<div class="mb-3" hidden>
     <label for="customer_id" class="form-label">Cliente id:</label>
     <input type="text" class="form-control" id="customer_id" name="customer_id" {{ $disabledStr }} value="{{isset($customer) ? old('customer_id', $customer->id) : ' '}}">
 </div>
@@ -25,13 +25,20 @@
 
 <div class="mb-3">
     <label for="name" class="form-label">Nome:</label>
-    <input type="text" class="form-control" id="name" name="name" {{ $disabledStr }} value="{{ old('name', $tshirtImage->name) }}" required>
-
-    
+    <input type="text" class="form-control" id="name" name="name" {{ $disabledStr }} value="{{ old('name', $tshirtImage->name) }}" required>    
 </div>
-
+@error('name')
+    <div class="invalid-feedback">
+        {{ $message }}
+    </div>
+@enderror
 
 <div class="mb-3">
     <label for="description" class="form-label">Descrição:</label>
     <textarea class="form-control" id="description" name="description" rows="3" {{ $disabledStr }} value="{{ old('description', $tshirtImage->description) }}" > {{ old('description', $tshirtImage->description) }}</textarea>
 </div>
+@error('description')
+    <div class="invalid-feedback">
+        {{ $message }}
+    </div>
+@enderror

@@ -130,7 +130,6 @@ class CartController extends Controller
                 $htmlMessage = "Não é possível confirmar a encomenda, porque o carrinho está vazio!";
             } else {
                 $customer = Auth::user()->customer;
-                DB::connection()->enableQueryLog();
                 #Encomenda
                 $order = new Order();
                 $order->status = 'pending';
@@ -162,12 +161,6 @@ class CartController extends Controller
                 });
 
                 $htmlMessage = "Foi confirmada a encomenda do customer #{$customer->id} <strong>\"{$customer->user->name}\"</strong>" ;
-                $queryLog = DB::getQueryLog();
-                foreach ($queryLog as $query) {
-                    $htmlMessage .= "Query: " . $query['query'] . "\n";
-                    $htmlMessage .= "Bindings: " . json_encode($query['bindings']) . "\n";
-                }
-
                 $request->session()->forget('cart');
                 return redirect()->route('orders.minhas')
                     ->with('alert-msg', $htmlMessage)

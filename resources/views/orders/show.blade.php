@@ -10,7 +10,13 @@
 
     <div class="d-flex justify-content-between">
         <div class="d-flex">
-            <a href="{{ route('orders.index') }}" class="btn btn-secondary">Voltar</a>
+            @if(Auth::user()->isAdmin() || Auth::user()->isEmployee())
+                <a href="{{ route('orders.index') }}" class="btn btn-secondary">Voltar</a>
+            @elseif(Auth::user()->isCustomer())
+                <a href="{{ route('orders.minhas') }}" class="btn btn-secondary">Voltar</a>
+            @else
+                <a href="{{ route('home') }}" class="btn btn-secondary">Voltar</a>
+            @endif
         </div>
         <div class="d-flex">
             @if(Auth::user()->isAdmin() || Auth::user()->isEmployee())

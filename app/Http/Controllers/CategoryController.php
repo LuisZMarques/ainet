@@ -11,6 +11,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\CategoryRequest;
 
 class CategoryController extends Controller
 {
@@ -48,15 +49,17 @@ class CategoryController extends Controller
         return view('categories.edit')->with('category', $category);
     }
 
-    public function update(Request $request, Category $category) : View
+    public function update(CategoryRequest $request, Category $category) : RedirectResponse
     {
-        $category->update($request->all());
-        return view('categories.show', compact('category'));
+        $category->update($request->validated());
+        return redirect()->route('categories.index')
+            ->with('alert-msg', "Categoria #{$category->id} \"{$category->name}\" atualizada com sucesso!")
+            ->with('alert-type', 'success');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(CategoryRequest $request): RedirectResponse
     {
-        Category::create($request->all());
+        Category::create($request->validated());
         return redirect()->route('categories.index')
             ->with('alert-msg', 'Categoria criada com sucesso!')
             ->with('alert-type', 'success');

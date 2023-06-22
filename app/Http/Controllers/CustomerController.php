@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\CustomerRequest;
 
 class CustomerController extends Controller
 {
@@ -41,9 +42,9 @@ class CustomerController extends Controller
         return view('customers.edit', compact('customer'));
     }
 
-    public function update(Request $request, Customer $customer): RedirectResponse
+    public function update(CustomerRequest $request, Customer $customer): RedirectResponse
     {
-        $customer->update($request->all());
+        $customer->update($request->validated());
         return redirect()->route('customers.index')
             ->with('alert-msg', 'Cliente atualizado com sucesso!')
             ->with('alert-type', 'success');

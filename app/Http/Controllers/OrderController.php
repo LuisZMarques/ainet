@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\OrderRequest;
 
 class OrderController extends Controller
 {
@@ -83,9 +84,9 @@ class OrderController extends Controller
         return view('orders.minhas', compact('orders'));
     }
 
-    public function update(Request $request, Order $order): RedirectResponse
+    public function update(OrderRequest $request, Order $order): RedirectResponse
     {   
-        $order->update($request->all());
+        $order->update($request->validated());
 
         if($request->status == 'closed'){
             $this->generateReceipt($order);
@@ -95,9 +96,9 @@ class OrderController extends Controller
             ->with('alert-type', 'success');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(OrderRequest $request): RedirectResponse
     {
-        Order::create($request->all());
+        Order::create($request->validated());
 
         return redirect()->route('orders.index')
             ->with('alert-msg', 'Encomenda criada com sucesso!')

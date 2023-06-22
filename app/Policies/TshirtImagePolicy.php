@@ -21,12 +21,12 @@ class TshirtImagePolicy
      */
     public function view(User $user, TshirtImage $tshirtImage): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->id == $tshirtImage->customer_id;
     }
 
-    public function minhasImagens(User $user, TshirtImage $tshirtImage): bool
+    public function minhasTshirtImages(User $user): bool
     {
-        return $user->id == $tshirtImage->user_id;
+        return $user->isCustomer();
     }
 
     /**
@@ -36,13 +36,12 @@ class TshirtImagePolicy
     {
         return $user->isAdmin() || $user->isCustomer();
     }
-
     /**
      * Determine whether the user can update the model.
      */
     public function update(User $user, TshirtImage $tshirtImage): bool
     {
-        return $user->isAdmin() || $user->id == $tshirtImage->user_id;
+        return $user->isAdmin() || $user->id == $tshirtImage->customer_id;
     }
 
     /**
@@ -50,6 +49,6 @@ class TshirtImagePolicy
      */
     public function delete(User $user, TshirtImage $tshirtImage): bool
     {
-        return $user->isAdmin() || $user->id == $tshirtImage->user_id;
+        return $user->isAdmin() || $user->id == $tshirtImage->customer_id;
     }
 }

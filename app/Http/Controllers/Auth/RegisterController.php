@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
+
+
 class RegisterController extends Controller
 {
     /*
@@ -54,7 +57,9 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:3', 'max:255','confirmed'],
+            'user_type' => ['required', Rule::in(['C'])],
+            'blocked' => ['required', 'boolean', 'in:0'],
             'nif' => ['required', 'string', 'max:9', 'unique:customers'],
             'endereco' => ['required', 'string', 'max:255'],
             'tipoPagamento' => ['required', 'string', 'max:255'],
@@ -84,9 +89,8 @@ class RegisterController extends Controller
                 'address' => $data['endereco'],
                 'default_payment_type' => $data['tipoPagamento'],
                 'default_payment_ref' => $data['RefPagamento'],
-                'id' => $newUser->id,
+                'id' => (int) $newUser->id,
             ]);
-            dd($data);
             return $newUser;
         });
     }

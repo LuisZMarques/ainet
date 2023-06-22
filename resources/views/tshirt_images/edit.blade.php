@@ -22,7 +22,13 @@
 
         <div class="text-center">
             <button type="submit" name="ok" class="btn btn-primary">Guardar Alterações</button>
-            <a href="{{ route('tshirt_images.index') }}" class="btn btn-secondary">Cancelar</a>
+            @if(Auth::user()->isAdmin())
+                <a href="{{ route('tshirt_images.index') }}" class="btn btn-secondary">Cancelar</a>
+            @elseif (Auth::user()->isCustomer())
+                <a href="{{ route('tshirt_images.minhas') }}" class="btn btn-secondary">Cancelar</a>
+            @else
+                <a href="{{ route('home') }}" class="btn btn-secondary">Cancelar</a>
+            @endif
         </div>
     </form>
 @endsection

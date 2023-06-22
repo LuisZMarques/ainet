@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Price;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\PriceRequest;
 
 class PriceController extends Controller
 {
@@ -24,9 +25,9 @@ class PriceController extends Controller
         return view('prices.edit', compact('price'));
     }
 
-    public function update(Request $request, Price $price) : RedirectResponse
+    public function update(PriceRequest $request, Price $price) : RedirectResponse
     {
-        $price->update($request->all());
+        $price->update($request->validated());
         return redirect()->route('prices.index')
             ->with('alert-msg', "Preço atualizado com sucesso!")
             ->with('alert-type', 'success');

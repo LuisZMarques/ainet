@@ -14,6 +14,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
+use App\Http\Requests\TshirtImageRequest;
  
 
 class TshirtImageController extends Controller
@@ -129,16 +130,17 @@ class TshirtImageController extends Controller
 
     public function minhasTshirtImages(Request $request): View
     {
-        $this->authorize('minhasImagens', TshirtImage::class);
+        $this->authorize('minhasTshirtImages', TshirtImage::class);
         $customer = $request->user()->customer;
         $tshirtImages = $request->user()->customer->tshirt_images;
     
         return view('tshirt_images.minhas', compact('tshirtImages', 'customer'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(TshirtImageRequest $request): RedirectResponse
     {
         if(Auth::user()->isCustomer()){
+            $tshirtImageValidated = $request->validated();
             $tshirtImage = new TshirtImage();
             $tshirtImage->name = $request->input('name');
             $tshirtImage->description = $request->input('description');

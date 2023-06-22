@@ -9,6 +9,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\ColorRequest;
 
 class ColorController extends Controller
 {
@@ -39,17 +40,17 @@ class ColorController extends Controller
         return view('colors.edit')->with('color', $color);
     }
 
-    public function update(Request $request, Color $color) : View
+    public function update(ColorRequest $request, Color $color) : RedirectResponse
     {
-        $color->update($request->all());
-        return view('colors.show', compact('color'))
+        $color->update($request->validated());
+        return redirect()->route('colors.index')
             ->with('alert-msg', "Cor <strong>\"{$color->name}\"</strong> atualizada com sucesso!")
             ->with('alert-type', 'success');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(ColorRequest $request): RedirectResponse
     {
-        Color::create($request->all());
+        Color::create($request->validated());
         return redirect()->route('colors.index')
             ->with('alert-msg', "Cor <strong>\"{$request->name}\"</strong> criada com sucesso!")
             ->with('alert-type', 'success');

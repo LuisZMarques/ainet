@@ -12,7 +12,13 @@
         
         <div class="d-flex justify-content-between">
             <div class="d-flex">
-                <a href="{{ route('tshirt_images.index') }}" class="btn btn-secondary">Voltar</a>
+                @if(Auth::user()->isAdmin())
+                    <a href="{{ route('tshirt_images.index') }}" class="btn btn-secondary">Voltar</a>
+                @elseif (Auth::user()->isCustomer())
+                    <a href="{{ route('tshirt_images.minhas') }}" class="btn btn-secondary">Voltar</a>
+                @else
+                    <a href="{{ route('home') }}" class="btn btn-secondary">Voltar</a>
+                @endif
             </div>
             <div class="d-flex">
                 <a href="{{ route('tshirt_images.edit', $tshirtImage->id ) }}" class="btn btn-primary">Editar</a>

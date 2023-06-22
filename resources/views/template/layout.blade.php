@@ -140,11 +140,6 @@
                                         href="{{ route('users.index') }}">Utilizadores</a>
                                 </nav>
                             </div>
-                            <a class="nav-link "
-                                href="{{ route('orders.index') }}">
-                                <div class="sb-nav-link-icon"><span class="fas fa-calculator"></span></div>
-                                Estatisticas
-                            </a>
                         @endif
                         @if (Auth::check() && Auth::user()->isCustomer())
                             <div class="sb-sidenav-menu-heading">Espaço Pessoal</div>
@@ -174,9 +169,11 @@
                     @if (session('alert-msg'))
                         @include('shared.messages')
                     @endif
+                    
                     @if ($errors->any())
                         @include('shared.alertValidation')
                     @endif
+
                     <h1 class="mt-4 text-center" >@yield('titulo', 'Imagine Shirt')</h1>
                     @yield('subtitulo')
                     <div class="mt-4">

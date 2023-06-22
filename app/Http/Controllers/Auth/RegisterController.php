@@ -10,7 +10,6 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 
@@ -56,11 +55,9 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:3', 'max:255','confirmed'],
-            'user_type' => ['required', Rule::in(['C'])],
-            'blocked' => ['required', 'boolean', 'in:0'],
-            'nif' => ['required', 'string', 'max:9', 'unique:customers'],
+            'nif' => ['required', 'string', 'max:9'],
             'endereco' => ['required', 'string', 'max:255'],
             'tipoPagamento' => ['required', 'string', 'max:255'],
             'RefPagamento' => ['required', 'string', 'max:255'],
@@ -76,20 +73,20 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return DB::transaction(function () use ($data) {
-            Log::debug('Registration data:', $data);
             $newUser = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
                 'user_type' => 'C',
                 'blocked' => 0,
+                'photo_urk' => null,
             ]); 
             Customer::create([
                 'nif' => $data['nif'],
-                'address' => $data['endereco'],
+                'address' => $data['address'],
                 'default_payment_type' => $data['tipoPagamento'],
-                'default_payment_ref' => $data['RefPagamento'],
-                'id' => (int) $newUser->id,
+                'default_payment_ref' => $data['refPagamento'],
+                'id' => $newUser->id,
             ]);
             return $newUser;
         });

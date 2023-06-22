@@ -11,11 +11,12 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\StatisticsController;
 
 Route::view('/', 'home')->name('root');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Auth::routes(['verify' => true]);
+Auth::routes(['verify' => false]);
 
 //Encomendas
 Route::resource('orders', OrderController::class);
@@ -50,3 +51,6 @@ Route::delete('/cart/{tshirtUniqueId}', [CartController::class, 'removeFromCart'
 Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
 Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
 Route::delete('/cart', [CartController::class, 'destroy'])->name('cart.destroy');
+
+
+

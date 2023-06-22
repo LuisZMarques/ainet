@@ -13,13 +13,15 @@
         <div class="d-flex">
             <a href="{{ route('users.index') }}" class="btn btn-secondary">Voltar</a>
         </div>
-        <div class="d-flex">
-            <a href="{{ route('users.edit', $user) }}" class="btn btn-primary">Editar</a>
-            <form method="POST" action="{{ route('users.destroy', $user) }}" style="display: inline-block;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este cliente?')">Eliminar</button>
-            </form>
-        </div>
+        @if(Auth::user()->isAdmin())
+            <div class="d-flex">
+                <a href="{{ route('users.edit', $user) }}" class="btn btn-primary">Editar</a>
+                <form method="POST" action="{{ route('users.destroy', $user) }}" style="display: inline-block;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este cliente?')">Eliminar</button>
+                </form>
+            </div>
+        @endif
     </div>
 @endsection

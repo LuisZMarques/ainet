@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Customer;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\CustomerRequest;
 
@@ -45,9 +43,21 @@ class CustomerController extends Controller
     public function update(CustomerRequest $request, Customer $customer): RedirectResponse
     {
         $customer->update($request->validated());
-        return redirect()->route('customers.index')
+
+        if($request->user()->isAdmin()){
+            return redirect()->route('customers.index')
             ->with('alert-msg', 'Cliente atualizado com sucesso!')
             ->with('alert-type', 'success');
+
+        }elseif($request->user()->id == $customer->id){
+            return redirect()->route('customers.show', $customer->id)
+                ->with('alert-msg', 'Atualizou o seu perfil com sucesso!')
+                ->with('alert-type', 'success');
+        }else{
+            return redirect()->route('home')
+                ->with('alert-msg', 'Não tem permissão para aceder a esta página!')
+                ->with('alert-type', 'danger');
+        }
     }
 
     public function destroy(Customer $customer): RedirectResponse

@@ -6,12 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\Auth;
 use Dompdf\Dompdf;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\OrderRequest;
 
 class OrderController extends Controller
 {
@@ -38,7 +34,7 @@ class OrderController extends Controller
             });
         }
 
-        $orders = $query->paginate(15);
+        $orders = $query->orderBy('created_at', 'desc')->paginate(15);
         
         return view('orders.index', compact('orders'));
     }
@@ -78,30 +74,20 @@ class OrderController extends Controller
                 $q->where('name', 'LIKE', '%' . $search . '%');
             });
         }
-
-        $orders = $query->paginate(15);
+        $orders = $query->orderBy('created_at', 'desc')->paginate(15);
         
         return view('orders.minhas', compact('orders'));
     }
 
-    public function update(OrderRequest $request, Order $order): RedirectResponse
+    public function update(Request $request, Order $order): RedirectResponse
     {   
-        $order->update($request->validated());
+        $order->update($request->all());
 
         if($request->status == 'closed'){
             $this->generateReceipt($order);
         }
         return redirect()->route('orders.index')
             ->with('alert-msg', "Encomenda #{$order->id} atualizada com sucesso!")
-            ->with('alert-type', 'success');
-    }
-
-    public function store(OrderRequest $request): RedirectResponse
-    {
-        Order::create($request->validated());
-
-        return redirect()->route('orders.index')
-            ->with('alert-msg', 'Encomenda criada com sucesso!')
             ->with('alert-type', 'success');
     }
 

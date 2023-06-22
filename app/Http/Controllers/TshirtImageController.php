@@ -11,9 +11,7 @@ use App\Models\Price;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Pagination\Paginator;
 use App\Http\Requests\TshirtImageRequest;
  
 
@@ -73,7 +71,7 @@ class TshirtImageController extends Controller
                 $query->where('name', 'LIKE', '%' . $search . '%');
             }
 
-            $tshirtImages = $query->paginate(15);
+            $tshirtImages = $query->orderBy('created_at', 'desc')->paginate(15);
             $categories = Category::all();
             $colors = Color::all();
             $prices = Price::first();
@@ -97,7 +95,7 @@ class TshirtImageController extends Controller
                 $query->where('name', 'LIKE', '%' . $search . '%');
             }
 
-            $tshirtImages = $query->paginate(15);
+            $tshirtImages = $query->orderBy('created_at', 'desc')->paginate(15);
             $categories = Category::all();
             $colors = Color::all();
             $prices = Price::first();
@@ -121,10 +119,10 @@ class TshirtImageController extends Controller
         return view('tshirt_images.edit', compact('tshirtImage', 'categories', 'customer'));
     }
 
-    public function update(Request $request, TshirtImage $tshirtImage): View
+    public function update(TshirtImageRequest $request, TshirtImage $tshirtImage): View
     {   
         $categories = Category::all();
-        $tshirtImage->update($request->all());
+        $tshirtImage->update($request->validated());
         return view('tshirt_images.edit', compact('tshirtImage', 'categories'));
     }
 
@@ -133,6 +131,7 @@ class TshirtImageController extends Controller
         $this->authorize('minhasTshirtImages', TshirtImage::class);
         $customer = $request->user()->customer;
         $tshirtImages = $request->user()->customer->tshirt_images;
+        
     
         return view('tshirt_images.minhas', compact('tshirtImages', 'customer'));
     }
@@ -155,6 +154,7 @@ class TshirtImageController extends Controller
 
         }elseif(Auth::user()->isAdmin()){
 
+            $tshirtImageValidated = $request->validated();
             $tshirtImage = new TshirtImage();
             $tshirtImage->name = $request->input('name');
             $tshirtImage->description = $request->input('description');

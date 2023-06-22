@@ -24,15 +24,8 @@ class CustomerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => [
-                'required',
-                Rule::unique('users', 'name')->ignore($this->user_id),
-            ],
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('users', 'email')->ignore($this->user_id),
-            ],
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
             'nif' => 'required|digits:9',
             'address' => 'nullable|string',
             'default_payment_type' => 'nullable|in:VISA,MC,PAYPAL',
@@ -49,6 +42,13 @@ class CustomerRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'name.required' => 'O campo nome é obrigatório.',
+            'name.string' => 'O nome deve ser uma string.',
+            'name.max' => 'O tamanho maximo do nome é 255.',
+            'email.required' => 'O campo email é obrigatório.',
+            'email.email' => 'O email deve ser um email válido.',
+            'email.unique' => 'O email já existe.',
+            'email.max' => 'O tamanho maximo do email é 255.',
             'nif.required' => 'O campo NIF é obrigatório.',
             'nif.string' => 'O NIF deve ser uma string.',
             'nif.digits' => 'O NIF deve conter 9 dígitos.',

@@ -39,13 +39,13 @@ class PriceRequest extends FormRequest
     {
         return [
             'unit_price_catalog.required' => 'O campo preço unitário do catálogo é obrigatório.',
-            'unit_price_catalog.numeric' => 'O preço unitário do catálogo deve ser um valor numérico, com maximo de 2 casas decimais.',
+            'unit_price_catalog.decimal' => 'O preço unitário do catálogo deve ter duas casas decimais.',
             'unit_price_own.required' => 'O campo preço unitário próprio é obrigatório.',
-            'unit_price_own.numeric' => 'O preço unitário próprio deve ser um valor numérico, com maximo de 2 casas decimais.',
+            'unit_price_own.decimal' => 'O preço unitário próprio deve ter duas casas decimais.',
             'unit_price_catalog_discount.required' => 'O campo preço unitário do catálogo com desconto é obrigatório.',
-            'unit_price_catalog_discount.numeric' => 'O preço unitário do catálogo com desconto deve ser um valor numérico.',
+            'unit_price_catalog_discount.decimal' => 'O preço unitário do catálogo com desconto deve ter duas casas decimais.',
             'unit_price_own_discount.required' => 'O campo preço unitário próprio com desconto é obrigatório.',
-            'unit_price_own_discount.numeric' => 'O preço unitário próprio com desconto deve ser um valor numérico.',
+            'unit_price_own_discount.decimal' => 'O preço unitário próprio com desconto deve ter duas casas decimais.',
             'qty_discount.required' => 'O campo quantidade de desconto é obrigatório.',
             'qty_discount.integer' => 'A quantidade de desconto deve ser um número inteiro.',
         ];

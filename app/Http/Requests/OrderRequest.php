@@ -28,7 +28,7 @@ class OrderRequest extends FormRequest
             'date' => 'required|date',
             'total_price' => 'required|decimal:2',
             'notes' => 'nullable|string',
-            'nif' => 'required|string',
+            'nif' => 'required|digits:9',
             'address' => 'required|string',
         ];
     }
@@ -41,8 +41,15 @@ class OrderRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'status.required' => 'O campo status é obrigatório.',
+            'status.string' => 'O status deve ser uma string.',
+            'status.in' => 'O status selecionado é inválido.',
+            'customer_id.required' => 'O campo cliente é obrigatório.',
+            'customer_id.integer' => 'O cliente deve ser um inteiro.',
+            'customer_id.exists' => 'O cliente selecionado é inválido.',
+            'date.required' => 'O campo data é obrigatório.',
+            'date.date' => 'A data deve ser uma data.',
             'nif.required' => 'O campo NIF é obrigatório.',
-            'nif.string' => 'O NIF deve ser uma string.',
             'nif.digits' => 'O NIF deve conter 9 dígitos.',
             'address.required' => 'O campo endereço é obrigatório.',
             'address.string' => 'O endereço deve ser uma string.',

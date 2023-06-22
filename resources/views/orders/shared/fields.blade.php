@@ -16,12 +16,13 @@
         <option value="closed">Fechada</option>
     @endif
     </select>
+    @error('status')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+    @enderror
 </div>
-@error('status')
-    <div class="invalid-feedback">
-        {{ $message }}
-    </div>
-@enderror
+
 
 <div class="mb-3">
     <label for="customer_id" class="form-label">ID do Cliente</label>
@@ -37,66 +38,71 @@
 <div class="mb-3">
     <label for="total_price" class="form-label">Preço Total</label>
     <input type="text" class="form-control @error('total_price') is-invalid @enderror" id="total_price" name="total_price" {{ $disabledStr }} value="{{ old('total_price', $order->total_price) }}">
+    @error('total_price')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+    @enderror
 </div>
-@error('total_price')
-    <div class="invalid-feedback">
-        {{ $message }}
-    </div>
-@enderror
 
 <div class="mb-3">
     <label for="notes" class="form-label">Notas</label>
     <textarea class="form-control @error('notes') is-invalid @enderror" id="notes" name="notes" {{ $disabledStr }} value="{{ old('total_price', $order->notes) }}" ></textarea>
+    @error('notes')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+    @enderror
 </div>
-@error('notes')
-    <div class="invalid-feedback">
-        {{ $message }}
-    </div>
-@enderror
+
 
 <div class="mb-3">
     <label for="nif" class="form-label">NIF</label>
     <input type="text" class="form-control @error('nif') is-invalid @enderror" id="nif" name="nif" {{ $disabledStr }} value="{{ old('name', $order->nif) }}">
+    @error('nif')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+    @enderror
+
 </div>
-@error('nif')
-    <div class="invalid-feedback">
-        {{ $message }}
-    </div>
-@enderror
 
 <div class="mb-3">
     <label for="address" class="form-label">Endereço</label>
     <input type="text" class="form-control @error('address') is-invalid @enderror" id="address" name="address" {{ $disabledStr }} value="{{ old('address', $order->address) }}">
+    @error('address')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+    @enderror
 </div>
-@error('address')
-    <div class="invalid-feedback">
-        {{ $message }}
-    </div>
-@enderror
+
 
 <div class="mb-3">
-    <label for="payment_type" class="form-label @error('payment_type') is-invalid @enderror">Tipo de Pagamento</label>
-    <select class="form-select" id="payment_type" name="payment_type">
+    <label for="payment_type" class="form-label">Tipo de Pagamento</label>
+    <select class="form-select @error('payment_type') is-invalid @enderror" id="payment_type" name="payment_type" {{ $disabledStr }}>
         <option value="VISA">Visa</option>
         <option value="MC">MasterCard</option>
         <option value="PAYPAL">Paypal</option>
     </select>
+    @error('payment_type')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+    @enderror
 </div>
-@error('payment_type')
-    <div class="invalid-feedback">
-        {{ $message }}
-    </div>
-@enderror
+
 
 <div class="mb-3">
-    <label for="payment_ref" class="form-label @error('payment_ref') is-invalid @enderror">Referência de Pagamento</label>
-    <input type="text" class="form-control" id="payment_ref" name="payment_ref" {{ $disabledStr }} value="{{ old('payment_ref', $order->payment_ref) }}">
+    <label for="payment_ref" class="form-label ">Referência de Pagamento</label>
+    <input type="text" class="form-control @error('payment_ref') is-invalid @enderror" id="payment_ref" name="payment_ref" {{ $disabledStr }} value="{{ old('payment_ref', $order->payment_ref) }}">
+    @error('payment_ref')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+    @enderror
 </div>
-@error('payment_ref')
-    <div class="invalid-feedback">
-        {{ $message }}
-    </div>
-@enderror
+
 
 <div class="mb-3">
     <label for="receipt_url" class="form-label">URL do Recibo</label>

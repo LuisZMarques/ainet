@@ -22,7 +22,7 @@ class CategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:1',
+            'name' => 'required|string|max:255',
         ];
     }
 
@@ -36,7 +36,7 @@ class CategoryRequest extends FormRequest
         return [
             'name.required' => 'O campo nome é obrigatório.',
             'name.string' => 'O nome deve ser uma string.',
-            'name.max' => 'O tamanho maximo do nome é 1.',
+            'name.max' => 'O tamanho maximo do nome é 255.',
         ];
     }
 }
